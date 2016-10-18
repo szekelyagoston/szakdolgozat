@@ -1,3 +1,11 @@
 <resources>
     <string name="app_name">FaceRecognition</string>
+
+    <string-array name="drawer_titles">
+        <item>Microsoft Project Oxford</item>
+        <item>Google Mobile Vision</item>
+    </string-array>
+	<string name="drawer_open">Open navigation drawer</string>
+    <string name="drawer_close">Close navigation drawer</string>
+
 </resources>

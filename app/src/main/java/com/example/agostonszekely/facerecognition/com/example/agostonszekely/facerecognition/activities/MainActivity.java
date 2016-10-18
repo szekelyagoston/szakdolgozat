@@ -28,9 +28,10 @@ import com.microsoft.projectoxford.face.*;
 import com.microsoft.projectoxford.face.contract.*;
 
 
-public class MainActivity extends AppCompatActivity{
+public class MainActivity extends NavigationDrawerActivity{
 
     private final int PICK_IMAGE = 1;
+    private final int MENUPOSITION = 0;
     private ProgressDialog detectionProgressDialog;
 
     private IFaceRecognition faceRecognition;
@@ -39,8 +40,16 @@ public class MainActivity extends AppCompatActivity{
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+
         setContentView(R.layout.activity_main);
+        super.onCreate(savedInstanceState);
+
+        drawerList.setItemChecked(MENUPOSITION, true);
+        setTitle(titles[MENUPOSITION]);
+        drawerLayout.closeDrawer(drawerList);
+
+
+
         Button button1 = (Button)findViewById(R.id.button1);
         button1.setOnClickListener(new View.OnClickListener() {
             @Override
