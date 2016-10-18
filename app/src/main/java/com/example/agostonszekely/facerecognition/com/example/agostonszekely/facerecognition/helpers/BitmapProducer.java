@@ -1,4 +1,4 @@
-package com.example.agostonszekely.facerecognition;
+package com.example.agostonszekely.facerecognition.com.example.agostonszekely.facerecognition.helpers;
 
 import android.graphics.Bitmap;
 import android.graphics.Matrix;
