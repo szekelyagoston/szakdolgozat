@@ -1,5 +1,6 @@
 package com.example.agostonszekely.facerecognition.com.example.agostonszekely.facerecognition.modules.microsoftoxford;
 
+import android.content.Context;
 import android.os.AsyncTask;
 
 import com.example.agostonszekely.facerecognition.com.example.agostonszekely.facerecognition.commons.services.AsyncResponse;
@@ -91,6 +92,14 @@ public class MicrosoftProjectOxford extends BaseFaceRecognitionApi implements IF
 
                 };
         detectTask.execute(inputStream);
-    };
+    }
+
+    @Override
+    public void getFaceRectangle(ByteArrayInputStream inputStream, Context context) {
+        //No need to use context
+        this.getFaceRectangle(inputStream);
+    }
+
+    ;
 
 }

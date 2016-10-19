@@ -1,6 +1,9 @@
 package com.example.agostonszekely.facerecognition.com.example.agostonszekely.facerecognition.modules.interfaces;
 
+import android.content.Context;
+
 import com.example.agostonszekely.facerecognition.com.example.agostonszekely.facerecognition.modules.commons.face.rectangle.FaceRectangle;
+import com.example.agostonszekely.facerecognition.com.example.agostonszekely.facerecognition.modules.googlemobilevision.exceptions.NoContextPresentException;
 
 import java.io.ByteArrayInputStream;
 
@@ -9,5 +12,6 @@ import java.io.ByteArrayInputStream;
  */
 
 public interface IFaceRecognition {
-    void getFaceRectangle(ByteArrayInputStream inputStream);
+    void getFaceRectangle(ByteArrayInputStream inputStream) throws NoContextPresentException;
+    void getFaceRectangle(ByteArrayInputStream inputStream, Context context);
 }

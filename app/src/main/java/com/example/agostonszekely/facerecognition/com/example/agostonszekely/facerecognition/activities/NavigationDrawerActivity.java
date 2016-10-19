@@ -1,7 +1,5 @@
 package com.example.agostonszekely.facerecognition.com.example.agostonszekely.facerecognition.activities;
 
-import android.app.Fragment;
-import android.app.FragmentManager;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
@@ -14,7 +12,6 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
-import android.widget.Toolbar;
 
 import com.example.agostonszekely.facerecognition.R;
 
@@ -118,7 +115,7 @@ public class NavigationDrawerActivity extends AppCompatActivity {
         // Create a new fragment and specify the planet to show based on position
         switch(position){
             case 0 : {
-                Intent a = new Intent(this, MainActivity.class);
+                Intent a = new Intent(this, MicrosoftProjectOxfordActivity.class);
                 startActivity(a);
                 break;
             }
