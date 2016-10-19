@@ -14,6 +14,9 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
 import com.example.agostonszekely.facerecognition.R;
+import com.example.agostonszekely.facerecognition.com.example.agostonszekely.facerecognition.activities.camera.MicrosoftProjectOxfordFaceCapturingActivity;
+import com.example.agostonszekely.facerecognition.com.example.agostonszekely.facerecognition.activities.picture.MicrosoftProjectOxfordActivity;
+import com.example.agostonszekely.facerecognition.com.example.agostonszekely.facerecognition.activities.picture.MobileVisionActivity;
 
 /**
  * Created by agoston.szekely on 2016.10.18..
@@ -121,6 +124,11 @@ public class NavigationDrawerActivity extends AppCompatActivity {
             }
             case 1 : {
                 Intent a = new Intent(this, MobileVisionActivity.class);
+                startActivity(a);
+                break;
+            }
+            case 2 : {
+                Intent a = new Intent(this, MicrosoftProjectOxfordFaceCapturingActivity.class);
                 startActivity(a);
                 break;
             }

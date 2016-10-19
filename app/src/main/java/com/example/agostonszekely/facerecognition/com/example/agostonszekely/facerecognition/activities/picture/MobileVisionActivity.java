@@ -1,6 +1,6 @@
-package com.example.agostonszekely.facerecognition.com.example.agostonszekely.facerecognition.activities;
+package com.example.agostonszekely.facerecognition.com.example.agostonszekely.facerecognition.activities.picture;
 
-import android.app.ProgressDialog;
+import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
@@ -21,21 +21,23 @@ import com.example.agostonszekely.facerecognition.com.example.agostonszekely.fac
 import com.example.agostonszekely.facerecognition.com.example.agostonszekely.facerecognition.helpers.OrientationHelper;
 import com.example.agostonszekely.facerecognition.com.example.agostonszekely.facerecognition.modules.commons.face.rectangle.FaceRectangleEnum;
 import com.example.agostonszekely.facerecognition.com.example.agostonszekely.facerecognition.modules.commons.face.wrapper.FaceProperties;
+import com.example.agostonszekely.facerecognition.com.example.agostonszekely.facerecognition.modules.googlemobilevision.GoogleMobileVision;
 import com.example.agostonszekely.facerecognition.com.example.agostonszekely.facerecognition.modules.googlemobilevision.exceptions.NoContextPresentException;
 import com.example.agostonszekely.facerecognition.com.example.agostonszekely.facerecognition.modules.interfaces.IFaceRecognition;
-import com.example.agostonszekely.facerecognition.com.example.agostonszekely.facerecognition.modules.microsoftoxford.MicrosoftProjectOxford;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.List;
 
+/**
+ * Created by agoston.szekely on 2016.10.18..
+ */
 
-public class MicrosoftProjectOxfordActivity extends SimpleFaceDetectingActivity{
+public class MobileVisionActivity extends SimpleFaceDetectingActivity{
 
     private final int PICK_IMAGE = 1;
-    private final int MENUPOSITION = 0;
-    private ProgressDialog detectionProgressDialog;
+    private final int MENUPOSITION = 1;
 
     private IFaceRecognition faceRecognition;
 
@@ -44,13 +46,12 @@ public class MicrosoftProjectOxfordActivity extends SimpleFaceDetectingActivity{
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_mobile_vision);
         super.onCreate(savedInstanceState);
 
         drawerList.setItemChecked(MENUPOSITION, true);
         setTitle(titles[MENUPOSITION]);
         drawerLayout.closeDrawer(drawerList);
-
 
 
         Button button1 = (Button)findViewById(R.id.button1);
@@ -63,9 +64,10 @@ public class MicrosoftProjectOxfordActivity extends SimpleFaceDetectingActivity{
             }
         });
 
-        faceRecognition = new MicrosoftProjectOxford(new AsyncResponse<List<FaceProperties>>() {
+        faceRecognition = new GoogleMobileVision(new AsyncResponse<List<FaceProperties>>() {
             @Override
             public void processFinish(List<FaceProperties> faces) {
+
                 ImageView imageView = (ImageView)findViewById(R.id.imageView1);
                 imageView.setImageBitmap(drawFaceRectanglesOnBitmap(bitmap, faces));
                 bitmap.recycle();
@@ -78,17 +80,16 @@ public class MicrosoftProjectOxfordActivity extends SimpleFaceDetectingActivity{
 
             }
         });
-
-        //detectionProgressDialog = new ProgressDialog(this);
     }
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == PICK_IMAGE && resultCode == RESULT_OK && data != null && data.getData() != null) {
+        if (requestCode == PICK_IMAGE && resultCode == Activity.RESULT_OK && data != null && data.getData() != null) {
             Uri uri = data.getData();
             try {
                 Bitmap src = MediaStore.Images.Media.getBitmap(getContentResolver(), uri);
-                Matrix rotationMatrix = OrientationHelper.rotate270(uri.getPath());
+                Matrix rotationMatrix = OrientationHelper.rotate270();
                 bitmap = BitmapProducer.CreateBitmap(src, rotationMatrix);
                 ImageView imageView = (ImageView) findViewById(R.id.imageView1);
                 imageView.setImageBitmap(bitmap);
@@ -103,9 +104,6 @@ public class MicrosoftProjectOxfordActivity extends SimpleFaceDetectingActivity{
         }
     }
 
-// Detect faces by uploading face images
-// Frame faces after detection
-
     private void detectAndFrame(final Bitmap imageBitmap) throws NoContextPresentException {
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         //compress quality -> if too high, method will be slow.
@@ -113,10 +111,9 @@ public class MicrosoftProjectOxfordActivity extends SimpleFaceDetectingActivity{
         ByteArrayInputStream inputStream =
                 new ByteArrayInputStream(outputStream.toByteArray());
 
-        faceRecognition.getFaceRectangle(inputStream);
+        faceRecognition.getFaceRectangle(inputStream, getApplicationContext());
 
     }
-
 
     private static Bitmap drawFaceRectanglesOnBitmap(Bitmap originalBitmap, List<FaceProperties> faces) {
         Bitmap bitmap = originalBitmap.copy(Bitmap.Config.ARGB_8888, true);
@@ -140,5 +137,6 @@ public class MicrosoftProjectOxfordActivity extends SimpleFaceDetectingActivity{
         }
         return bitmap;
     }
+
 
 }

@@ -75,7 +75,10 @@ public class MicrosoftProjectOxford extends BaseFaceRecognitionApi implements IF
                     @Override
                     protected void onPostExecute(Face[] result) {
                        //detectionProgressDialog.dismiss();
-                        if (result == null) return;
+                        if (result == null) {
+                            delegate.processFinish(new ArrayList<FaceProperties>());
+                            return;
+                        }
 
                         //Processing result
                         List<FaceProperties> resultArray = new ArrayList<>();

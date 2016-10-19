@@ -8,16 +8,21 @@
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".com.example.agostonszekely.facerecognition.activities.MicrosoftProjectOxfordActivity">
+        <activity android:name=".com.example.agostonszekely.facerecognition.activities.picture.MicrosoftProjectOxfordActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".com.example.agostonszekely.facerecognition.activities.MobileVisionActivity">
+        <activity android:name=".com.example.agostonszekely.facerecognition.activities.picture.MobileVisionActivity">
+        </activity>
+        <activity android:name=".com.example.agostonszekely.facerecognition.activities.camera.MicrosoftProjectOxfordFaceCapturingActivity">
         </activity>
     </application>
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-feature android:name="android.hardware.camera" android:required="true" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
 
 </manifest>
