@@ -1,6 +1,7 @@
 package com.example.agostonszekely.facerecognition.com.example.agostonszekely.facerecognition.services.camera;
 
 import android.content.Context;
+import android.graphics.Matrix;
 import android.hardware.Camera;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
@@ -29,6 +30,7 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
         holder.addCallback(this);
 
         holder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
+
     }
 
     @Override

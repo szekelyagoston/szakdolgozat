@@ -19,7 +19,27 @@
                 android:layout_width="fill_parent"
                 android:layout_height="fill_parent"
                 android:layout_weight="1"
+                android:layout_above="@+id/imageView1"
+                />
+            <FrameLayout
+                android:id="@+id/framLayout"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:layout_weight="1"
+                android:layout_above="@+id/roll"
+                >
+                <ImageView
+                    android:layout_width="match_parent"
+                    android:layout_height="fill_parent"
+                    android:id="@+id/imageView1" />
+            </FrameLayout>
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
                 android:layout_above="@+id/button_capture"
+                android:layout_centerHorizontal="true"
+                android:gravity="center"
+                android:id="@+id/roll"
                 />
 
             <Button
