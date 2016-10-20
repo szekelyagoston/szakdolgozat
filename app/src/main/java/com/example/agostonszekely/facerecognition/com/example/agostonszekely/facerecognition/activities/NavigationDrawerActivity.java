@@ -15,6 +15,7 @@ import android.widget.ListView;
 
 import com.example.agostonszekely.facerecognition.R;
 import com.example.agostonszekely.facerecognition.com.example.agostonszekely.facerecognition.activities.camera.MicrosoftProjectOxfordFaceCapturingActivity;
+import com.example.agostonszekely.facerecognition.com.example.agostonszekely.facerecognition.activities.camera.videos.VideoAnalyzerActivity;
 import com.example.agostonszekely.facerecognition.com.example.agostonszekely.facerecognition.activities.picture.MicrosoftProjectOxfordActivity;
 import com.example.agostonszekely.facerecognition.com.example.agostonszekely.facerecognition.activities.picture.MobileVisionActivity;
 
@@ -129,6 +130,11 @@ public class NavigationDrawerActivity extends AppCompatActivity {
             }
             case 2 : {
                 Intent a = new Intent(this, MicrosoftProjectOxfordFaceCapturingActivity.class);
+                startActivity(a);
+                break;
+            }
+            case 3 : {
+                Intent a = new Intent(this, VideoAnalyzerActivity.class);
                 startActivity(a);
                 break;
             }
