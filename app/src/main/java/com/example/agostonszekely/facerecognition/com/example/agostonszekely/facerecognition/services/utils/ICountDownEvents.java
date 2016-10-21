@@ -5,6 +5,6 @@ package com.example.agostonszekely.facerecognition.com.example.agostonszekely.fa
  */
 
 public interface ICountDownEvents {
-    void onTick(int secondsRemaining);
+    void onTick(Integer secondsRemaining);
     void onFinish();
 }

@@ -21,6 +21,7 @@ import com.example.agostonszekely.facerecognition.com.example.agostonszekely.fac
 import com.example.agostonszekely.facerecognition.com.example.agostonszekely.facerecognition.modules.microsoftoxford.MicrosoftProjectOxford;
 import com.example.agostonszekely.facerecognition.com.example.agostonszekely.facerecognition.services.camera.CameraPreview;
 import com.example.agostonszekely.facerecognition.com.example.agostonszekely.facerecognition.services.challenge.utils.ChallengeTypes;
+import com.example.agostonszekely.facerecognition.com.example.agostonszekely.facerecognition.services.utils.CountDownType;
 import com.example.agostonszekely.facerecognition.com.example.agostonszekely.facerecognition.services.utils.ICountDownEvents;
 import com.example.agostonszekely.facerecognition.com.example.agostonszekely.facerecognition.services.utils.SecondCountDownTimer;
 
@@ -32,7 +33,12 @@ import java.util.List;
 
 public class VideoAnalyzerActivity extends NavigationDrawerActivity {
     private final int MENUPOSITION = 4;
-    private final static int COUNTDOWNSECONDS = 3;
+    private final static Integer COUNTDOWNSECONDS = 3;
+    private final static Integer COUNTDOWNINTERVAL = 1;
+    //means 20/10 -> 2sec
+    private final static Integer TIMEOFCHALLENGE = 20;
+    //Means 2/10 sec --> that way we will send 20 -1(due to the strange countdown bug) frames
+    private final static Integer CHALLENGEFRAMECOUNT = 2;
 
     private Camera camera;
     private CameraPreview cameraPreview;
@@ -81,10 +87,10 @@ public class VideoAnalyzerActivity extends NavigationDrawerActivity {
     }
 
     private void setupCountDownTimer() {
-        timer = new SecondCountDownTimer(COUNTDOWNSECONDS, 1, new ICountDownEvents() {
+        timer = new SecondCountDownTimer(COUNTDOWNSECONDS, COUNTDOWNINTERVAL, CountDownType.SECONDS, new ICountDownEvents() {
 
         @Override
-        public void onTick(int secondsRemaining) {
+        public void onTick(Integer secondsRemaining) {
             textView.setText(Integer.toString(secondsRemaining));
         }
 
@@ -102,16 +108,18 @@ public class VideoAnalyzerActivity extends NavigationDrawerActivity {
 
 
 
-        new SecondCountDownTimer(COUNTDOWNSECONDS, 1, new ICountDownEvents() {
+        new SecondCountDownTimer(TIMEOFCHALLENGE, CHALLENGEFRAMECOUNT,CountDownType.TENTH_OF_SEC, new ICountDownEvents() {
+            int a = 0;
             @Override
-            public void onTick(int secondsRemaining) {
-                //DO nothing, let it tick at the moment :D
+            public void onTick(Integer secondsRemaining) {
+                ++a;
+                System.out.println(a);
             }
 
             @Override
             public void onFinish() {
-                //detectionProgressDialog.setMessage("Processing data");
-                //detectionProgressDialog.show();
+                detectionProgressDialog.setMessage("Processing data");
+                detectionProgressDialog.show();
 
                 //TODO: processing data
                 //detectionProgressDialog.dismiss();
