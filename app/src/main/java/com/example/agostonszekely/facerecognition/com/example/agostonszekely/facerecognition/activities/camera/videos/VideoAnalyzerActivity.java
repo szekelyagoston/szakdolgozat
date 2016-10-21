@@ -11,9 +11,11 @@ import android.graphics.Paint;
 import android.hardware.Camera;
 import android.os.Bundle;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.example.agostonszekely.facerecognition.R;
@@ -34,6 +36,7 @@ import java.io.IOException;
 import java.util.List;
 
 import static android.R.attr.id;
+import static android.R.attr.width;
 
 /**
  * Created by agoston.szekely on 2016.10.20..
