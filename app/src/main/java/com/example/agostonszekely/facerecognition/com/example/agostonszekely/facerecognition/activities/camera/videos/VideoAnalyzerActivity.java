@@ -1,105 +1,127 @@
 package com.example.agostonszekely.facerecognition.com.example.agostonszekely.facerecognition.activities.camera.videos;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.pm.PackageManager;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.Canvas;
-import android.graphics.Color;
-import android.graphics.Matrix;
-import android.graphics.Paint;
 import android.hardware.Camera;
 import android.os.Bundle;
+import android.os.CountDownTimer;
+import android.os.Handler;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.example.agostonszekely.facerecognition.R;
 import com.example.agostonszekely.facerecognition.com.example.agostonszekely.facerecognition.activities.NavigationDrawerActivity;
 import com.example.agostonszekely.facerecognition.com.example.agostonszekely.facerecognition.commons.services.AsyncResponse;
-import com.example.agostonszekely.facerecognition.com.example.agostonszekely.facerecognition.helpers.BitmapProducer;
-import com.example.agostonszekely.facerecognition.com.example.agostonszekely.facerecognition.helpers.OrientationHelper;
-import com.example.agostonszekely.facerecognition.com.example.agostonszekely.facerecognition.modules.commons.face.rectangle.FaceRectangleEnum;
+import com.example.agostonszekely.facerecognition.com.example.agostonszekely.facerecognition.commons.services.EnumHelper;
 import com.example.agostonszekely.facerecognition.com.example.agostonszekely.facerecognition.modules.commons.face.wrapper.FaceProperties;
-import com.example.agostonszekely.facerecognition.com.example.agostonszekely.facerecognition.modules.googlemobilevision.exceptions.NoContextPresentException;
-import com.example.agostonszekely.facerecognition.com.example.agostonszekely.facerecognition.modules.interfaces.IFaceRecognition;
 import com.example.agostonszekely.facerecognition.com.example.agostonszekely.facerecognition.modules.microsoftoxford.MicrosoftProjectOxford;
 import com.example.agostonszekely.facerecognition.com.example.agostonszekely.facerecognition.services.camera.CameraPreview;
+import com.example.agostonszekely.facerecognition.com.example.agostonszekely.facerecognition.services.challenge.utils.ChallengeTypes;
+import com.example.agostonszekely.facerecognition.com.example.agostonszekely.facerecognition.services.utils.ICountDownEvents;
+import com.example.agostonszekely.facerecognition.com.example.agostonszekely.facerecognition.services.utils.SecondCountDownTimer;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.util.List;
 
-import static android.R.attr.id;
-import static android.R.attr.width;
-
 /**
- * Created by agoston.szekely on 2016.10.20..
+ * Created by agoston.szekely on 2016.10.21..
  */
 
-@SuppressWarnings("deprecation")
 public class VideoAnalyzerActivity extends NavigationDrawerActivity {
-    private final int MENUPOSITION = 3;
+    private final int MENUPOSITION = 4;
+    private final static int COUNTDOWNSECONDS = 3;
+
     private Camera camera;
     private CameraPreview cameraPreview;
 
-    private IFaceRecognition faceRecognition;
+    private TextView textView;
+    private SecondCountDownTimer timer;
 
-    private Bitmap bitmap;
+    //progressdialog is shown when processing result
+    private ProgressDialog detectionProgressDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
-        setContentView(R.layout.camera_preview);
+        setContentView(R.layout.video_analyzer);
         super.onCreate(savedInstanceState);
 
         drawerList.setItemChecked(MENUPOSITION, true);
         setTitle(titles[MENUPOSITION]);
         drawerLayout.closeDrawer(drawerList);
 
-        Button captureButton = (Button) findViewById(R.id.button_capture);
-        captureButton.setOnClickListener(
+        Button countStartButton = (Button) findViewById(R.id.button_challenge);
+        textView = (TextView)findViewById(R.id.text_challenge);
+
+        countStartButton.setOnClickListener(
                 new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        // get an image from the camera
-                        camera.takePicture(null, null, pictureCallback);
+                         startCountDown();
                     }
                 }
         );
 
-        faceRecognition = new MicrosoftProjectOxford(new AsyncResponse<List<FaceProperties>>() {
-            @Override
-            public void processFinish(List<FaceProperties> faces) {
-
-                ImageView imageView = (ImageView)findViewById(R.id.imageView1);
-                imageView.setImageBitmap(drawFaceRectanglesOnBitmap(bitmap, faces));
-                if (bitmap != null && !bitmap.isRecycled()){
-                    bitmap.recycle();
-                    bitmap = null;
-                }
-
-
-                //ugly. should be placed above rectangles
-                if (faces.size() >0){
-                    TextView rollTextView = (TextView)findViewById(R.id.roll);
-                    rollTextView.setText(faces.get(0).getFacePosition().getFacePosition().getReadableName() + " ( " + faces.get(0).getFacePosition().getYaw() + " )" ) ;
-                }
-
-            }
-        });
-
-
+        detectionProgressDialog = new ProgressDialog(this);
         startCamera();
     }
 
+    private void startCountDown() {
+        textView.setText(Integer.toString(COUNTDOWNSECONDS));
+        startCountDownTimer();
+    }
+
+    private void startCountDownTimer() {
+        setupCountDownTimer();
+
+        timer.start();
+    }
+
+    private void setupCountDownTimer() {
+        timer = new SecondCountDownTimer(COUNTDOWNSECONDS, 1, new ICountDownEvents() {
+
+        @Override
+        public void onTick(int secondsRemaining) {
+            textView.setText(Integer.toString(secondsRemaining));
+        }
+
+        @Override
+        public void onFinish() {
+            startChallenge();
+        }
+    });
+    }
+
+    private void startChallenge() {
+        ChallengeTypes challenge = EnumHelper.getRandomEnum(ChallengeTypes.class);
+        textView.setText(challenge.getText());
+
+
+
+
+        new SecondCountDownTimer(COUNTDOWNSECONDS, 1, new ICountDownEvents() {
+            @Override
+            public void onTick(int secondsRemaining) {
+                //DO nothing, let it tick at the moment :D
+            }
+
+            @Override
+            public void onFinish() {
+                //detectionProgressDialog.setMessage("Processing data");
+                //detectionProgressDialog.show();
+
+                //TODO: processing data
+                //detectionProgressDialog.dismiss();
+            }
+        }).start();
+
+    }
+
     @Override
-    protected void onPause(){
+    protected void onPause() {
         super.onPause();
         releaseCamera();
     }
@@ -169,63 +191,5 @@ public class VideoAnalyzerActivity extends NavigationDrawerActivity {
         }
     }
 
-    private Camera.PictureCallback pictureCallback = new Camera.PictureCallback() {
-        @Override
-        public void onPictureTaken(byte[] data, Camera camera) {
-            camera.startPreview();
-            ByteArrayInputStream inputStream = new ByteArrayInputStream(data);
-            bitmap = BitmapFactory.decodeStream(inputStream);
-            Matrix rotationMatrix = null;
-            try {
-                rotationMatrix = OrientationHelper.rotate270();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            bitmap = BitmapProducer.CreateBitmap(bitmap, rotationMatrix);
-            bitmap = BitmapProducer.MirrorBitmap(bitmap);
 
-            ImageView imageView = (ImageView) findViewById(R.id.imageView1);
-            imageView.setImageBitmap(bitmap);
-
-            try {
-                detectAndFrame(bitmap);
-            } catch (NoContextPresentException e) {
-                e.printStackTrace();
-            }
-        }
-    };
-
-    private void detectAndFrame(final Bitmap imageBitmap) throws NoContextPresentException {
-        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-        //compress quality -> if too high, method will be slow.
-        imageBitmap.compress(Bitmap.CompressFormat.JPEG, 3, outputStream);
-        ByteArrayInputStream inputStream =
-                new ByteArrayInputStream(outputStream.toByteArray());
-        //TODO: HANDLING async stuff
-        faceRecognition.getFaceRectangle(inputStream);
-
-    }
-
-    private static Bitmap drawFaceRectanglesOnBitmap(Bitmap originalBitmap, List<FaceProperties> faces) {
-        Bitmap bitmap = originalBitmap.copy(Bitmap.Config.ARGB_8888, true);
-        Canvas canvas = new Canvas(bitmap);
-        Paint paint = new Paint();
-        paint.setAntiAlias(true);
-        paint.setStyle(Paint.Style.STROKE);
-        paint.setColor(Color.RED);
-        int stokeWidth = 6;
-        paint.setStrokeWidth(stokeWidth);
-        if (faces != null) {
-            for (FaceProperties face : faces) {
-
-                canvas.drawRect(
-                        face.getFaceRectangle().getFaceRectangleValues(FaceRectangleEnum.LEFT),
-                        face.getFaceRectangle().getFaceRectangleValues(FaceRectangleEnum.TOP),
-                        face.getFaceRectangle().getFaceRectangleValues(FaceRectangleEnum.RIGHT),
-                        face.getFaceRectangle().getFaceRectangleValues(FaceRectangleEnum.BOTTOM),
-                        paint);
-            }
-        }
-        return bitmap;
-    }
 }

@@ -6,7 +6,7 @@ package com.example.agostonszekely.facerecognition.com.example.agostonszekely.fa
 
 public enum FacePositionEnum {
 
-    FACING_CAMERA(-15d, +15d), LOOKING_RIGHT(-90d, -15d), LOOKING_LEFT(+15d, +90d);
+    FACING_CAMERA(-15d, +15d), LOOKING_LEFT(-90d, -15d), LOOKING_RIGHT(+15d, +90d);
 
     private Double from;
     private Double to;
