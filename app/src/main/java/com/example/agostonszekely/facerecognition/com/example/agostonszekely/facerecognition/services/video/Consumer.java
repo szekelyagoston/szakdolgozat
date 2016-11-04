@@ -1,5 +1,7 @@
 package com.example.agostonszekely.facerecognition.com.example.agostonszekely.facerecognition.services.video;
 
+import com.example.agostonszekely.facerecognition.com.example.agostonszekely.facerecognition.modules.interfaces.IFaceRecognition;
+
 import java.util.concurrent.BlockingQueue;
 
 /**
@@ -8,16 +10,23 @@ import java.util.concurrent.BlockingQueue;
 
 public class Consumer implements Runnable{
 
-    private BlockingQueue<VideoFrame> queue;
+    private BlockingQueue<IFaceRecognition> queue;
 
-    public Consumer(BlockingQueue<VideoFrame> queue) {
+    public Consumer(BlockingQueue<IFaceRecognition> queue) {
         this.queue = queue;
     }
 
     @Override
     public void run() {
         while(true) {
-            //queue.take();
+            try {
+                //nem jó, it tmár az eredményt kéne kivenni
+                IFaceRecognition result = queue.take();
+
+
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
         }
     }
 }
