@@ -48,8 +48,8 @@ public class VideoAnalyzerActivity extends NavigationDrawerActivity {
     private final static Integer COUNTDOWNINTERVAL = 1;
     //means 2/10 -> 2sec
     private final static Integer TIMEOFCHALLENGE = 20;
-    //Means 2/10 sec ->callback will be in every 0,2sec --> that way we will send 10-1(due to the strange countdown bug) frames
-    private final static Integer CHALLENGEFRAMECOUNT = 2;
+    //Means 1/10 sec ->callback will be in every 0,1sec --> that way we will send 20-1(due to the strange countdown bug) frames
+    private final static Integer CHALLENGEFRAMECOUNT = 1;
 
     private Camera camera;
     private CameraPreview cameraPreview;

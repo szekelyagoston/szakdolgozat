@@ -21,6 +21,9 @@ import java.util.List;
  */
 
 public class VideoAnalyzer implements IVideoAnalyzer{
+
+    private static final int MAX_SELECTED_FRAMES = 20;
+
     private List<VideoFrame> frames = new ArrayList<>();
     private Camera.Parameters parameters;
     private int width;
@@ -44,13 +47,28 @@ public class VideoAnalyzer implements IVideoAnalyzer{
     @Override
     public List<Bitmap> processData() {
 
-        int steps = frames.size() / 10 + 1;
 
-        List<Bitmap> result = new ArrayList<>(frames.size());
+        //maximum MAX_SELECTED_FRAMES frames should be selected
+        float steps;
+        int resultCount;
+        //we have less than MAX_SELECTED_FRAMES frames to choose from.
+        if (frames.size() < MAX_SELECTED_FRAMES){
+            steps = 1;
+            resultCount = frames.size();
+        }else{
+            //we have more than MAX_SELECTED_FRAMES frames, so we choose MAX_SELECTED_FRAMES.
+            steps = frames.size() / MAX_SELECTED_FRAMES;
+            resultCount = MAX_SELECTED_FRAMES;
+        }
 
-        for (int i = 0; i < frames.size(); i = i + steps){
+        List<Bitmap> result = new ArrayList<>(MAX_SELECTED_FRAMES);
 
-            VideoFrame frame = frames.get(i);
+        float currentValue = 0f;
+        for (int i = 0; i < resultCount; ++i){
+            currentValue = currentValue + steps;
+            int nextIndex = ((int)currentValue) - 1;
+
+            VideoFrame frame = frames.get(nextIndex);
 
             YuvImage yuv = new YuvImage(frame.getData(), parameters.getPreviewFormat(), width, height, null);
             ByteArrayOutputStream out = new ByteArrayOutputStream();
@@ -69,7 +87,10 @@ public class VideoAnalyzer implements IVideoAnalyzer{
             bitmap = BitmapProducer.MirrorBitmap(bitmap);
 
             result.add(bitmap);
+
+
         }
+
         return result;
     }
 }
