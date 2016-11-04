@@ -18,6 +18,8 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.BlockingQueue;
 
 /**
  * Created by agoston.szekely on 2016.10.21..
@@ -31,6 +33,9 @@ public class VideoAnalyzer implements IVideoAnalyzer{
     private Camera.Parameters parameters;
     private int width;
     private int height;
+
+    Producer producer;
+    Consumer consumer;
 
     public VideoAnalyzer(Camera.Parameters parameters) {
         this.parameters = parameters;
@@ -100,7 +105,16 @@ public class VideoAnalyzer implements IVideoAnalyzer{
     @Override
     public void processData(ChallengeTypes challenge, AsyncResponse response) {
         ChallengeResult result = new ChallengeResult(challenge);
-
+        setupVideoAnalyzing();
         response.processFinish(result);
+    }
+
+    private void setupVideoAnalyzing() {
+        BlockingQueue queue = new ArrayBlockingQueue(MAX_SELECTED_FRAMES);
+        producer = new Producer(frames, queue);
+        consumer = new Consumer(queue);
+
+        new Thread(producer).start();
+        new Thread(consumer).start();
     }
 }
