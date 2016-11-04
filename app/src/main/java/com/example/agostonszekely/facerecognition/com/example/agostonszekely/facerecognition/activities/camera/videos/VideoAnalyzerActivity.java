@@ -25,6 +25,7 @@ import com.example.agostonszekely.facerecognition.com.example.agostonszekely.fac
 import com.example.agostonszekely.facerecognition.com.example.agostonszekely.facerecognition.modules.commons.face.wrapper.FaceProperties;
 import com.example.agostonszekely.facerecognition.com.example.agostonszekely.facerecognition.modules.googlemobilevision.exceptions.NoContextPresentException;
 import com.example.agostonszekely.facerecognition.com.example.agostonszekely.facerecognition.modules.microsoftoxford.MicrosoftProjectOxford;
+import com.example.agostonszekely.facerecognition.com.example.agostonszekely.facerecognition.services.ChallengeResult;
 import com.example.agostonszekely.facerecognition.com.example.agostonszekely.facerecognition.services.camera.CameraPreview;
 import com.example.agostonszekely.facerecognition.com.example.agostonszekely.facerecognition.services.challenge.utils.ChallengeTypes;
 import com.example.agostonszekely.facerecognition.com.example.agostonszekely.facerecognition.services.utils.CountDownType;
@@ -139,9 +140,15 @@ public class VideoAnalyzerActivity extends NavigationDrawerActivity {
 
                 //TEST
                 releaseCamera();
-                List<Bitmap> picturesFromVideo = videoAnalyzer.processData();
+                //List<Bitmap> picturesFromVideo = videoAnalyzer.processDataWithBitmaps();
+                videoAnalyzer.processData(challenge, new AsyncResponse<ChallengeResult>(){
+                    @Override
+                    public void processFinish(ChallengeResult result) {
 
-                testShowPicturesInOrder(picturesFromVideo);
+                    }
+                });
+
+                //testShowPicturesInOrder(picturesFromVideo);
                 //detectionProgressDialog.dismiss();
             }
 

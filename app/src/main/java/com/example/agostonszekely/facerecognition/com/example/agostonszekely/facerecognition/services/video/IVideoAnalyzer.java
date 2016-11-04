@@ -2,6 +2,9 @@ package com.example.agostonszekely.facerecognition.com.example.agostonszekely.fa
 
 import android.graphics.Bitmap;
 
+import com.example.agostonszekely.facerecognition.com.example.agostonszekely.facerecognition.commons.services.AsyncResponse;
+import com.example.agostonszekely.facerecognition.com.example.agostonszekely.facerecognition.services.challenge.utils.ChallengeTypes;
+
 import java.util.List;
 
 /**
@@ -10,5 +13,6 @@ import java.util.List;
 
 public interface IVideoAnalyzer {
     void addFrame(VideoFrame frame);
-    List<Bitmap> processData();
+    List<Bitmap> processDataWithBitmaps();
+    void processData(ChallengeTypes challenge, AsyncResponse response);
 }

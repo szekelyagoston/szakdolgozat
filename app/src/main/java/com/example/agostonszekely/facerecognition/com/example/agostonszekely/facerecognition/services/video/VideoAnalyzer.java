@@ -7,8 +7,11 @@ import android.graphics.Rect;
 import android.graphics.YuvImage;
 import android.hardware.Camera;
 
+import com.example.agostonszekely.facerecognition.com.example.agostonszekely.facerecognition.commons.services.AsyncResponse;
 import com.example.agostonszekely.facerecognition.com.example.agostonszekely.facerecognition.helpers.BitmapProducer;
 import com.example.agostonszekely.facerecognition.com.example.agostonszekely.facerecognition.helpers.OrientationHelper;
+import com.example.agostonszekely.facerecognition.com.example.agostonszekely.facerecognition.services.ChallengeResult;
+import com.example.agostonszekely.facerecognition.com.example.agostonszekely.facerecognition.services.challenge.utils.ChallengeTypes;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -45,7 +48,7 @@ public class VideoAnalyzer implements IVideoAnalyzer{
     }
 
     @Override
-    public List<Bitmap> processData() {
+    public List<Bitmap> processDataWithBitmaps() {
 
 
         //maximum MAX_SELECTED_FRAMES frames should be selected
@@ -92,5 +95,12 @@ public class VideoAnalyzer implements IVideoAnalyzer{
         }
 
         return result;
+    }
+
+    @Override
+    public void processData(ChallengeTypes challenge, AsyncResponse response) {
+        ChallengeResult result = new ChallengeResult(challenge);
+
+        response.processFinish(result);
     }
 }
