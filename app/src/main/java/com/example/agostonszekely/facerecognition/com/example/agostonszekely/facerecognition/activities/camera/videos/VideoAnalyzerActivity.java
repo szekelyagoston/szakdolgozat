@@ -46,9 +46,9 @@ public class VideoAnalyzerActivity extends NavigationDrawerActivity {
     private final int MENUPOSITION = 4;
     private final static Integer COUNTDOWNSECONDS = 3;
     private final static Integer COUNTDOWNINTERVAL = 1;
-    //means 20/10 -> 2sec
-    private final static Integer TIMEOFCHALLENGE = 30;
-    //Means 2/10 sec --> that way we will send 20 -1(due to the strange countdown bug) frames
+    //means 2/10 -> 2sec
+    private final static Integer TIMEOFCHALLENGE = 20;
+    //Means 2/10 sec ->callback will be in every 0,2sec --> that way we will send 10-1(due to the strange countdown bug) frames
     private final static Integer CHALLENGEFRAMECOUNT = 2;
 
     private Camera camera;
@@ -90,38 +90,39 @@ public class VideoAnalyzerActivity extends NavigationDrawerActivity {
     }
 
     private void startCountDown() {
-        textView.setText(Integer.toString(COUNTDOWNSECONDS));
-        startCountDownTimer();
+        ChallengeTypes challenge = EnumHelper.getRandomEnum(ChallengeTypes.class);
+        textView.setText(challenge.getText());
+
+        textView.setText(challenge.getText() + " in " + Integer.toString(COUNTDOWNSECONDS) + " seconds");
+        startCountDownTimer(challenge);
     }
 
-    private void startCountDownTimer() {
-        setupCountDownTimer();
+    private void startCountDownTimer(ChallengeTypes challenge) {
+        setupCountDownTimer(challenge);
 
         timer.start();
     }
 
-    private void setupCountDownTimer() {
+    private void setupCountDownTimer(final ChallengeTypes challenge) {
         timer = new SecondCountDownTimer(COUNTDOWNSECONDS, COUNTDOWNINTERVAL, CountDownType.SECONDS, new ICountDownEvents() {
 
         @Override
         public void onTick(Integer secondsRemaining) {
-            textView.setText(Integer.toString(secondsRemaining));
+            textView.setText(challenge.getText() + " in " + Integer.toString(secondsRemaining) + " seconds");
         }
 
         @Override
         public void onFinish() {
-            startChallenge();
+            startChallenge(challenge);
         }
     });
     }
 
-    private void startChallenge() {
-        ChallengeTypes challenge = EnumHelper.getRandomEnum(ChallengeTypes.class);
-        textView.setText(challenge.getText());
+    private void startChallenge(final ChallengeTypes challenge) {
         videoAnalyzer = new VideoAnalyzer(camera.getParameters());
         analyzeRunning = true;
 
-
+        textView.setText(challenge.getText() + " NOW!");
 
         new SecondCountDownTimer(TIMEOFCHALLENGE, CHALLENGEFRAMECOUNT,CountDownType.TENTH_OF_SEC, new ICountDownEvents() {
 
