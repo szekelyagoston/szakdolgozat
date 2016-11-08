@@ -25,7 +25,7 @@ public class MicrosoftProjectOxfordFaceAPI implements Callable<List<FaceProperti
 
     private ByteArrayInputStream stream;
 
-    private static final FaceServiceClient faceServiceClient =
+    private FaceServiceClient faceServiceClient =
             new FaceServiceRestClient("8976f015460d43f6b99ebcf989dabadd");
 
     public MicrosoftProjectOxfordFaceAPI(ByteArrayInputStream stream){

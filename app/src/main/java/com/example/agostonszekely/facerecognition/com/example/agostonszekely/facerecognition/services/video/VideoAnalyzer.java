@@ -31,7 +31,7 @@ import java.util.concurrent.BlockingQueue;
 
 public class VideoAnalyzer implements IVideoAnalyzer{
 
-    private static final int MAX_SELECTED_FRAMES = 1;
+    private static final int MAX_SELECTED_FRAMES = 20;
 
     private List<VideoFrame> frames = new ArrayList<>();
     private List<List<FaceProperties>> processedFrames = new ArrayList<>();
@@ -184,7 +184,7 @@ public class VideoAnalyzer implements IVideoAnalyzer{
 
             ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
             //compress quality -> if too high, method will be slow.
-            bitmap.compress(Bitmap.CompressFormat.JPEG, 3, outputStream);
+            //bitmap.compress(Bitmap.CompressFormat.JPEG, 3, outputStream);
             ByteArrayInputStream inputStream =
                     new ByteArrayInputStream(outputStream.toByteArray());
 
