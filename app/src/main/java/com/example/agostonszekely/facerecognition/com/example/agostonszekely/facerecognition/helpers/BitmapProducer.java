@@ -2,6 +2,7 @@ package com.example.agostonszekely.facerecognition.com.example.agostonszekely.fa
 
 import android.graphics.Bitmap;
 import android.graphics.Matrix;
+import android.graphics.YuvImage;
 
 /**
  * Created by agoston.szekely on 2016.10.14..
@@ -18,4 +19,6 @@ public class BitmapProducer {
         src = Bitmap.createBitmap(src, 0, 0, src.getWidth(), src.getHeight(), rotationMatrix, true);
         return src;
     }
+
+
 }

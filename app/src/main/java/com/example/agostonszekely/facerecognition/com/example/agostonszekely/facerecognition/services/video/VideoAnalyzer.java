@@ -8,8 +8,12 @@ import android.graphics.YuvImage;
 import android.hardware.Camera;
 
 import com.example.agostonszekely.facerecognition.com.example.agostonszekely.facerecognition.commons.services.AsyncResponse;
+import com.example.agostonszekely.facerecognition.com.example.agostonszekely.facerecognition.commons.services.AsyncResponseWithIndex;
 import com.example.agostonszekely.facerecognition.com.example.agostonszekely.facerecognition.helpers.BitmapProducer;
 import com.example.agostonszekely.facerecognition.com.example.agostonszekely.facerecognition.helpers.OrientationHelper;
+import com.example.agostonszekely.facerecognition.com.example.agostonszekely.facerecognition.modules.commons.face.wrapper.FaceProperties;
+import com.example.agostonszekely.facerecognition.com.example.agostonszekely.facerecognition.modules.interfaces.IFaceRecognition;
+import com.example.agostonszekely.facerecognition.com.example.agostonszekely.facerecognition.modules.microsoftoxford.MicrosoftProjectOxford;
 import com.example.agostonszekely.facerecognition.com.example.agostonszekely.facerecognition.services.ChallengeResult;
 import com.example.agostonszekely.facerecognition.com.example.agostonszekely.facerecognition.services.challenge.utils.ChallengeTypes;
 
@@ -27,15 +31,13 @@ import java.util.concurrent.BlockingQueue;
 
 public class VideoAnalyzer implements IVideoAnalyzer{
 
-    private static final int MAX_SELECTED_FRAMES = 20;
+    private static final int MAX_SELECTED_FRAMES = 1;
 
     private List<VideoFrame> frames = new ArrayList<>();
+    private List<List<FaceProperties>> processedFrames = new ArrayList<>();
     private Camera.Parameters parameters;
     private int width;
     private int height;
-
-    Producer producer;
-    Consumer consumer;
 
     public VideoAnalyzer(Camera.Parameters parameters) {
         this.parameters = parameters;
@@ -49,6 +51,8 @@ public class VideoAnalyzer implements IVideoAnalyzer{
 
     @Override
     public void addFrame(VideoFrame frame){
+
+
         this.frames.add(frame);
     }
 
@@ -103,18 +107,75 @@ public class VideoAnalyzer implements IVideoAnalyzer{
     }
 
     @Override
-    public void processData(ChallengeTypes challenge, AsyncResponse response) {
-        ChallengeResult result = new ChallengeResult(challenge);
-        setupVideoAnalyzing();
-        response.processFinish(result);
+    public void processData(final ChallengeTypes challenge,final AsyncResponse response) {
+
+        List<VideoFrame> listForProcessing = processFramesForAPIFormat();
+
+        FrameQueue frameQueue = new FrameQueue(listForProcessing);
+        frameQueue.process(new AsyncResponse<List<List<FaceProperties>>>(){
+
+            @Override
+            public void processFinish(List<List<FaceProperties>> processedFaces) {
+                ChallengeResult result = new ChallengeResult(challenge);
+
+                response.processFinish(result);
+            }
+        });
+
+
     }
 
-    private void setupVideoAnalyzing() {
-        BlockingQueue queue = new ArrayBlockingQueue(MAX_SELECTED_FRAMES);
-        producer = new Producer(frames, queue);
-        consumer = new Consumer(queue);
+    private List<VideoFrame> processFramesForAPIFormat() {
+        //maximum MAX_SELECTED_FRAMES frames should be selected
+        float steps;
+        int resultCount;
+        //we have less than MAX_SELECTED_FRAMES frames to choose from.
+        if (frames.size() < MAX_SELECTED_FRAMES){
+            steps = 1;
+            resultCount = frames.size();
+        }else{
+            //we have more than MAX_SELECTED_FRAMES frames, so we choose MAX_SELECTED_FRAMES.
+            steps = frames.size() / MAX_SELECTED_FRAMES;
+            resultCount = MAX_SELECTED_FRAMES;
+        }
 
-        new Thread(producer).start();
-        new Thread(consumer).start();
+        List<VideoFrame> framesForProcessing = new ArrayList<>(MAX_SELECTED_FRAMES);
+
+        float currentValue = 0f;
+        for (int i = 0; i < resultCount; ++i){
+            currentValue = currentValue + steps;
+            int nextIndex = ((int)currentValue) - 1;
+
+            VideoFrame frame = frames.get(nextIndex);
+            //calculating inputstream
+            YuvImage yuv = new YuvImage(frame.getData(), parameters.getPreviewFormat(), width, height, null);
+            ByteArrayOutputStream out = new ByteArrayOutputStream();
+            yuv.compressToJpeg(new Rect(0, 0, width, height), 50, out);
+
+            byte[] bytes = out.toByteArray();
+
+            Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+            Matrix rotationMatrix = null;
+            try {
+                rotationMatrix = OrientationHelper.rotate270();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            bitmap = BitmapProducer.CreateBitmap(bitmap, rotationMatrix);
+            bitmap = BitmapProducer.MirrorBitmap(bitmap);
+
+            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+            //compress quality -> if too high, method will be slow.
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 3, outputStream);
+            ByteArrayInputStream inputStream =
+                    new ByteArrayInputStream(outputStream.toByteArray());
+
+            frame.setProcessedInputStream(inputStream);
+            framesForProcessing.add(frame);
+
+        }
+
+        return framesForProcessing;
     }
+
 }

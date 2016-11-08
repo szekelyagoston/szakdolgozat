@@ -4,6 +4,7 @@ import android.content.Context;
 import android.os.AsyncTask;
 
 import com.example.agostonszekely.facerecognition.com.example.agostonszekely.facerecognition.commons.services.AsyncResponse;
+import com.example.agostonszekely.facerecognition.com.example.agostonszekely.facerecognition.commons.services.AsyncResponseWithIndex;
 import com.example.agostonszekely.facerecognition.com.example.agostonszekely.facerecognition.modules.BaseFaceRecognitionApi;
 import com.example.agostonszekely.facerecognition.com.example.agostonszekely.facerecognition.modules.commons.face.position.FacePosition;
 import com.example.agostonszekely.facerecognition.com.example.agostonszekely.facerecognition.modules.commons.face.position.FacePositionEnum;
@@ -31,6 +32,11 @@ public class MicrosoftProjectOxford extends BaseFaceRecognitionApi implements IF
 
     public MicrosoftProjectOxford(AsyncResponse<List<FaceProperties>> delegate) {
         super(delegate);
+    }
+
+    public MicrosoftProjectOxford(int index, AsyncResponseWithIndex<List<FaceProperties>> delegate) {
+        super(delegate);
+        frameIndex = index;
     }
 
     @Override
@@ -76,7 +82,7 @@ public class MicrosoftProjectOxford extends BaseFaceRecognitionApi implements IF
                     protected void onPostExecute(Face[] result) {
                        //detectionProgressDialog.dismiss();
                         if (result == null) {
-                            delegate.processFinish(new ArrayList<FaceProperties>());
+                            processFinish(new ArrayList<FaceProperties>());
                             return;
                         }
 
@@ -90,7 +96,7 @@ public class MicrosoftProjectOxford extends BaseFaceRecognitionApi implements IF
                             resultArray.add(new FaceProperties(rectangle, position));
                         }
 
-                        delegate.processFinish(resultArray);
+                        processFinish(resultArray);
                     }
 
                 };
