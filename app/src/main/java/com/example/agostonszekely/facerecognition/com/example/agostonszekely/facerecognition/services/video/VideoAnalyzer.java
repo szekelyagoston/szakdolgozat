@@ -118,6 +118,24 @@ public class VideoAnalyzer implements IVideoAnalyzer{
             public void processFinish(List<List<FaceProperties>> processedFaces) {
                 ChallengeResult result = new ChallengeResult(challenge);
 
+                int typeMultiplier = 1;
+                if (challenge.equals(ChallengeTypes.TURN_HEAD_LEFT)){
+                    typeMultiplier = -1;
+                }
+
+                for (List<FaceProperties> faces : processedFaces){
+                    FaceProperties face;
+                    if (faces.size()> 0){
+                        face = faces.get(0);
+
+                        if (face.getFacePosition().getYaw() * (typeMultiplier) > challenge.getFrom() * (typeMultiplier) ){
+                            result.setAccepted(Boolean.TRUE);
+                        }
+                    }
+
+
+                }
+
                 response.processFinish(result);
             }
         });

@@ -144,7 +144,11 @@ public class VideoAnalyzerActivity extends NavigationDrawerActivity {
                 videoAnalyzer.processData(challenge, new AsyncResponse<ChallengeResult>(){
                     @Override
                     public void processFinish(ChallengeResult result) {
-
+                        if (result.getAccepted()){
+                            textView.setText("ACCEPTED");
+                        }else{
+                            textView.setText("NOT ACCEPTED");
+                        }
                     }
                 });
 
