@@ -1,11 +1,15 @@
 package com.example.agostonszekely.facerecognition.com.example.agostonszekely.facerecognition.services.video;
 
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.hardware.camera2.params.Face;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.agostonszekely.facerecognition.R;
+import com.example.agostonszekely.facerecognition.com.example.agostonszekely.facerecognition.activities.camera.videos.VideoAnalyzerModuleFactory;
+import com.example.agostonszekely.facerecognition.com.example.agostonszekely.facerecognition.activities.camera.videos.VideoAnalyzerModules;
+import com.example.agostonszekely.facerecognition.com.example.agostonszekely.facerecognition.activities.camera.videos.exceptions.GoogleMobileVisionMissingContextException;
 import com.example.agostonszekely.facerecognition.com.example.agostonszekely.facerecognition.commons.services.AsyncResponse;
 import com.example.agostonszekely.facerecognition.com.example.agostonszekely.facerecognition.commons.services.AsyncResponseWithIndex;
 import com.example.agostonszekely.facerecognition.com.example.agostonszekely.facerecognition.modules.commons.face.wrapper.FaceProperties;
@@ -29,26 +33,32 @@ import java.util.concurrent.Future;
  * Created by agoston.szekely on 2016.11.04..
  */
 
-public class FrameQueue{
+public class FrameQueue<T extends Callable<List<FaceProperties>>>{
 
-    List<VideoFrame> frames;
-    List<FaceRecognitionTask> processedData;
+    private VideoAnalyzerModules moduleType;
 
-    public FrameQueue(List<VideoFrame> frames) {
+    private List<VideoFrame> frames;
+    //private List<FaceRecognitionTask> processedData;
+    private Context context;
+
+    public FrameQueue(List<VideoFrame> frames, VideoAnalyzerModules moduleType, Context context) {
         this.frames = frames;
-        processedData = new ArrayList<>(frames.size());
+        /*processedData = new ArrayList<>(frames.size());
         for (int i = 0; i < frames.size(); ++i){
             processedData.add(new FaceRecognitionTask());
-        }
+        }*/
+        this.moduleType = moduleType;
+        this.context = context;
     }
 
-    public void process(AsyncResponse<List<List<FaceProperties>>> response){
+    public void process(AsyncResponse<List<List<FaceProperties>>> response) throws GoogleMobileVisionMissingContextException {
         ExecutorService executor = Executors.newFixedThreadPool(frames.size());
         List<Future<List<FaceProperties>>> result = new ArrayList<>(frames.size());
         List<List<FaceProperties>> allResult = new ArrayList<>(frames.size());
 
         for (VideoFrame frame : frames){
-            Callable<List<FaceProperties>> callable = new MicrosoftProjectOxfordFaceAPI(frame.getProcessedInputStream());
+            VideoAnalyzerModuleFactory factory = new VideoAnalyzerModuleFactory();
+            Callable<List<FaceProperties>> callable = factory.getModule(moduleType, frame.getProcessedInputStream(), context);
             Future<List<FaceProperties>> future = executor.submit(callable);
 
             result.add(future);
@@ -56,6 +66,7 @@ public class FrameQueue{
 
         for (Future<List<FaceProperties>> future : result){
             try {
+                //blocking -> will stay in order
                 List<FaceProperties> faces = future.get();
                 allResult.add(faces);
             } catch (InterruptedException e) {
@@ -68,6 +79,8 @@ public class FrameQueue{
         executor.shutdown();
         response.processFinish(allResult);
     }
+
+
 
 
 }

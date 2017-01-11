@@ -2,6 +2,7 @@ package com.example.agostonszekely.facerecognition.com.example.agostonszekely.fa
 
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -18,6 +19,7 @@ import android.widget.TextView;
 
 import com.example.agostonszekely.facerecognition.R;
 import com.example.agostonszekely.facerecognition.com.example.agostonszekely.facerecognition.activities.NavigationDrawerActivity;
+import com.example.agostonszekely.facerecognition.com.example.agostonszekely.facerecognition.activities.camera.videos.exceptions.GoogleMobileVisionMissingContextException;
 import com.example.agostonszekely.facerecognition.com.example.agostonszekely.facerecognition.commons.services.AsyncResponse;
 import com.example.agostonszekely.facerecognition.com.example.agostonszekely.facerecognition.commons.services.EnumHelper;
 import com.example.agostonszekely.facerecognition.com.example.agostonszekely.facerecognition.helpers.BitmapProducer;
@@ -44,7 +46,7 @@ import java.util.List;
  */
 
 public class VideoAnalyzerActivity extends NavigationDrawerActivity {
-    private final int MENUPOSITION = 4;
+
     private final static Integer COUNTDOWNSECONDS = 3;
     private final static Integer COUNTDOWNINTERVAL = 1;
     //means 2/10 -> 2sec
@@ -64,15 +66,13 @@ public class VideoAnalyzerActivity extends NavigationDrawerActivity {
     private IVideoAnalyzer videoAnalyzer;
     private Boolean analyzeRunning = false;
 
+    private VideoAnalyzerModules module;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
         setContentView(R.layout.video_analyzer);
         super.onCreate(savedInstanceState);
-
-        drawerList.setItemChecked(MENUPOSITION, true);
-        setTitle(titles[MENUPOSITION]);
-        drawerLayout.closeDrawer(drawerList);
 
         Button countStartButton = (Button) findViewById(R.id.button_challenge);
         textView = (TextView)findViewById(R.id.text_challenge);
@@ -86,8 +86,13 @@ public class VideoAnalyzerActivity extends NavigationDrawerActivity {
                 }
         );
 
-        detectionProgressDialog = new ProgressDialog(this);
+        Intent intent = getIntent();
+        this.module = (VideoAnalyzerModules) intent.getSerializableExtra("Module");
+        //detectionProgressDialog = new ProgressDialog(this);
         startCamera();
+
+
+
     }
 
     private void startCountDown() {
@@ -120,7 +125,8 @@ public class VideoAnalyzerActivity extends NavigationDrawerActivity {
     }
 
     private void startChallenge(final ChallengeTypes challenge) {
-        videoAnalyzer = new VideoAnalyzer(camera.getParameters());
+        VideoAnalyzerModuleFactory factory = new VideoAnalyzerModuleFactory();
+        videoAnalyzer = factory.getVideoAnalyzer(module, camera.getParameters(), getApplicationContext());
         analyzeRunning = true;
 
         textView.setText(challenge.getText() + " NOW!");
@@ -133,7 +139,7 @@ public class VideoAnalyzerActivity extends NavigationDrawerActivity {
             }
 
             @Override
-            public void onFinish() {
+            public void onFinish(){
                 analyzeRunning = false;
                 //detectionProgressDialog.setMessage("Processing data");
                 //detectionProgressDialog.show();
@@ -141,16 +147,20 @@ public class VideoAnalyzerActivity extends NavigationDrawerActivity {
                 //TEST
                 releaseCamera();
                 //List<Bitmap> picturesFromVideo = videoAnalyzer.processDataWithBitmaps();
-                videoAnalyzer.processData(challenge, new AsyncResponse<ChallengeResult>(){
-                    @Override
-                    public void processFinish(ChallengeResult result) {
-                        if (result.getAccepted()){
-                            textView.setText("ACCEPTED");
-                        }else{
-                            textView.setText("NOT ACCEPTED");
+                try {
+                    videoAnalyzer.processData(challenge, new AsyncResponse<ChallengeResult>(){
+                        @Override
+                        public void processFinish(ChallengeResult result) {
+                            if (result.getAccepted()){
+                                textView.setText("ACCEPTED");
+                            }else{
+                                textView.setText("NOT ACCEPTED");
+                            }
                         }
-                    }
-                });
+                    });
+                } catch (GoogleMobileVisionMissingContextException e) {
+                    e.printStackTrace();
+                }
 
                 //testShowPicturesInOrder(picturesFromVideo);
                 //detectionProgressDialog.dismiss();
@@ -262,8 +272,6 @@ public class VideoAnalyzerActivity extends NavigationDrawerActivity {
             if (analyzeRunning){
                 videoAnalyzer.addFrame(new VideoFrame(data));
             }
-
-
         }
 
     };

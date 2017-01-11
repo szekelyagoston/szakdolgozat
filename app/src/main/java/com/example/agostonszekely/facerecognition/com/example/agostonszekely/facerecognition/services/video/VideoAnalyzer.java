@@ -1,5 +1,6 @@
 package com.example.agostonszekely.facerecognition.com.example.agostonszekely.facerecognition.services.video;
 
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
@@ -7,6 +8,8 @@ import android.graphics.Rect;
 import android.graphics.YuvImage;
 import android.hardware.Camera;
 
+import com.example.agostonszekely.facerecognition.com.example.agostonszekely.facerecognition.activities.camera.videos.VideoAnalyzerModules;
+import com.example.agostonszekely.facerecognition.com.example.agostonszekely.facerecognition.activities.camera.videos.exceptions.GoogleMobileVisionMissingContextException;
 import com.example.agostonszekely.facerecognition.com.example.agostonszekely.facerecognition.commons.services.AsyncResponse;
 import com.example.agostonszekely.facerecognition.com.example.agostonszekely.facerecognition.commons.services.AsyncResponseWithIndex;
 import com.example.agostonszekely.facerecognition.com.example.agostonszekely.facerecognition.helpers.BitmapProducer;
@@ -24,12 +27,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.Callable;
 
 /**
  * Created by agoston.szekely on 2016.10.21..
  */
 
-public class VideoAnalyzer implements IVideoAnalyzer{
+public abstract class VideoAnalyzer implements IVideoAnalyzer{
 
     private static final int MAX_SELECTED_FRAMES = 20;
 
@@ -38,11 +42,23 @@ public class VideoAnalyzer implements IVideoAnalyzer{
     private Camera.Parameters parameters;
     private int width;
     private int height;
+    private VideoAnalyzerModules moduleType;
+    private Context context;
 
-    public VideoAnalyzer(Camera.Parameters parameters) {
+    public VideoAnalyzer(Camera.Parameters parameters, VideoAnalyzerModules moduleType) {
         this.parameters = parameters;
         this.height = parameters.getPreviewSize().height;
         this.width = parameters.getPreviewSize().width;
+        this.moduleType = moduleType;
+        this.context = null;
+    }
+
+    public VideoAnalyzer(Camera.Parameters parameters, VideoAnalyzerModules moduleType, Context context) {
+        this.parameters = parameters;
+        this.height = parameters.getPreviewSize().height;
+        this.width = parameters.getPreviewSize().width;
+        this.moduleType = moduleType;
+        this.context = context;
     }
 
     public List<VideoFrame> getFrames() {
@@ -51,15 +67,11 @@ public class VideoAnalyzer implements IVideoAnalyzer{
 
     @Override
     public void addFrame(VideoFrame frame){
-
-
         this.frames.add(frame);
     }
 
     @Override
     public List<Bitmap> processDataWithBitmaps() {
-
-
         //maximum MAX_SELECTED_FRAMES frames should be selected
         float steps;
         int resultCount;
@@ -72,9 +84,7 @@ public class VideoAnalyzer implements IVideoAnalyzer{
             steps = frames.size() / MAX_SELECTED_FRAMES;
             resultCount = MAX_SELECTED_FRAMES;
         }
-
         List<Bitmap> result = new ArrayList<>(MAX_SELECTED_FRAMES);
-
         float currentValue = 0f;
         for (int i = 0; i < resultCount; ++i){
             currentValue = currentValue + steps;
@@ -107,11 +117,9 @@ public class VideoAnalyzer implements IVideoAnalyzer{
     }
 
     @Override
-    public void processData(final ChallengeTypes challenge,final AsyncResponse response) {
-
+    public void processData(final ChallengeTypes challenge,final AsyncResponse response) throws GoogleMobileVisionMissingContextException {
         List<VideoFrame> listForProcessing = processFramesForAPIFormat();
-
-        FrameQueue frameQueue = new FrameQueue(listForProcessing);
+        FrameQueue frameQueue = new FrameQueue(listForProcessing, moduleType, context);
         frameQueue.process(new AsyncResponse<List<List<FaceProperties>>>(){
 
             @Override
@@ -122,7 +130,6 @@ public class VideoAnalyzer implements IVideoAnalyzer{
                 if (challenge.equals(ChallengeTypes.TURN_HEAD_LEFT)){
                     typeMultiplier = -1;
                 }
-
                 for (List<FaceProperties> faces : processedFaces){
                     FaceProperties face;
                     if (faces.size()> 0){
@@ -132,15 +139,10 @@ public class VideoAnalyzer implements IVideoAnalyzer{
                             result.setAccepted(Boolean.TRUE);
                         }
                     }
-
-
                 }
-
                 response.processFinish(result);
             }
         });
-
-
     }
 
     private List<VideoFrame> processFramesForAPIFormat() {
@@ -156,9 +158,7 @@ public class VideoAnalyzer implements IVideoAnalyzer{
             steps = frames.size() / MAX_SELECTED_FRAMES;
             resultCount = MAX_SELECTED_FRAMES;
         }
-
         List<VideoFrame> framesForProcessing = new ArrayList<>(MAX_SELECTED_FRAMES);
-
         float currentValue = 0f;
         for (int i = 0; i < resultCount; ++i){
             currentValue = currentValue + steps;
@@ -190,9 +190,7 @@ public class VideoAnalyzer implements IVideoAnalyzer{
 
             frame.setProcessedInputStream(inputStream);
             framesForProcessing.add(frame);
-
         }
-
         return framesForProcessing;
     }
 
