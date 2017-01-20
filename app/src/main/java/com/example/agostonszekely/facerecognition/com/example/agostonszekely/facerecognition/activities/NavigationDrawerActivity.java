@@ -20,6 +20,7 @@ import com.example.agostonszekely.facerecognition.com.example.agostonszekely.fac
 import com.example.agostonszekely.facerecognition.com.example.agostonszekely.facerecognition.activities.camera.videos.MPOVideoAnalyzerActivity;
 import com.example.agostonszekely.facerecognition.com.example.agostonszekely.facerecognition.activities.camera.videos.VideoAnalyzerActivity;
 import com.example.agostonszekely.facerecognition.com.example.agostonszekely.facerecognition.activities.camera.videos.VideoAnalyzerModules;
+import com.example.agostonszekely.facerecognition.com.example.agostonszekely.facerecognition.activities.picture.FacePPActivity;
 import com.example.agostonszekely.facerecognition.com.example.agostonszekely.facerecognition.activities.picture.MicrosoftProjectOxfordActivity;
 import com.example.agostonszekely.facerecognition.com.example.agostonszekely.facerecognition.activities.picture.MobileVisionActivity;
 
@@ -133,22 +134,27 @@ public class NavigationDrawerActivity extends AppCompatActivity {
                 break;
             }
             case 2 : {
-                Intent a = new Intent(this, MicrosoftProjectOxfordFaceCapturingActivity.class);
+                Intent a = new Intent(this, FacePPActivity.class);
                 startActivity(a);
                 break;
             }
             case 3 : {
-                Intent a = new Intent(this, PictureAnalyzerActivity.class);
+                Intent a = new Intent(this, MicrosoftProjectOxfordFaceCapturingActivity.class);
                 startActivity(a);
                 break;
             }
             case 4 : {
+                Intent a = new Intent(this, PictureAnalyzerActivity.class);
+                startActivity(a);
+                break;
+            }
+            case 5 : {
                 Intent a = new Intent(this, MPOVideoAnalyzerActivity.class);
                 a.putExtra("Module", VideoAnalyzerModules.MICROSOFT_PROJECT_OXFORD);
                 startActivity(a);
                 break;
             }
-            case 5 : {
+            case 6 : {
                 Intent a = new Intent(this, GMOVIdeoAnalyzerActivity.class);
                 a.putExtra("Module", VideoAnalyzerModules.GOOGLE_MOBILE_VISION);
                 startActivity(a);

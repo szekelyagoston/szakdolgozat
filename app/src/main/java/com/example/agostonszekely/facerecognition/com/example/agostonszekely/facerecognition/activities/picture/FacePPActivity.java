@@ -1,8 +1,7 @@
-package com.example.agostonszekely.facerecognition.com.example.agostonszekely.facerecognition.activities.camera;
+package com.example.agostonszekely.facerecognition.com.example.agostonszekely.facerecognition.activities.picture;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
-import android.content.ContentResolver;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
@@ -11,52 +10,45 @@ import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Environment;
 import android.provider.MediaStore;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.example.agostonszekely.facerecognition.R;
-import com.example.agostonszekely.facerecognition.com.example.agostonszekely.facerecognition.activities.NavigationDrawerActivity;
 import com.example.agostonszekely.facerecognition.com.example.agostonszekely.facerecognition.commons.services.AsyncResponse;
 import com.example.agostonszekely.facerecognition.com.example.agostonszekely.facerecognition.helpers.BitmapProducer;
 import com.example.agostonszekely.facerecognition.com.example.agostonszekely.facerecognition.helpers.OrientationHelper;
 import com.example.agostonszekely.facerecognition.com.example.agostonszekely.facerecognition.modules.commons.face.rectangle.FaceRectangleEnum;
 import com.example.agostonszekely.facerecognition.com.example.agostonszekely.facerecognition.modules.commons.face.wrapper.FaceProperties;
+import com.example.agostonszekely.facerecognition.com.example.agostonszekely.facerecognition.modules.facepp.FacePlusPlus;
 import com.example.agostonszekely.facerecognition.com.example.agostonszekely.facerecognition.modules.googlemobilevision.exceptions.NoContextPresentException;
 import com.example.agostonszekely.facerecognition.com.example.agostonszekely.facerecognition.modules.interfaces.IFaceRecognition;
 import com.example.agostonszekely.facerecognition.com.example.agostonszekely.facerecognition.modules.microsoftoxford.MicrosoftProjectOxford;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
 /**
- * Created by agoston.szekely on 2016.10.19..
+ * Created by agoston.szekely on 2017.01.20..
  */
 
-public class MicrosoftProjectOxfordFaceCapturingActivity extends NavigationDrawerActivity {
-    private final int MENUPOSITION =3;
-    static final int REQUEST_IMAGE_CAPTURE = 1;
-
+public class FacePPActivity extends SimpleFaceDetectingActivity {
+    private final int MENUPOSITION = 2;
+    private final int PICK_IMAGE = 1;
     private ProgressDialog detectionProgressDialog;
 
     private IFaceRecognition faceRecognition;
 
     private Bitmap bitmap = null;
 
-    private Uri imageUri;
-    private File photo;
-
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
 
-        setContentView(R.layout.activity_detect_picture_mpo);
+        setContentView(R.layout.activity_main);
         super.onCreate(savedInstanceState);
 
         drawerList.setItemChecked(MENUPOSITION, true);
@@ -69,28 +61,14 @@ public class MicrosoftProjectOxfordFaceCapturingActivity extends NavigationDrawe
         button1.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                try
-                {
-                    // place where to store camera taken picture
-                    photo = createTemporaryFile("picture", ".jpg");
-                }
-                catch(Exception e)
-                {
-
-                }
-
-                imageUri = Uri.fromFile(photo);
-                takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
-
-                //finding an app which can handle the intent. If there is no such an app, we can not perform the tas
-                if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
-                    startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
-                }
+                Intent callIntent = new Intent(Intent.ACTION_GET_CONTENT);
+                callIntent.setType("image/*");
+                startActivityForResult(Intent.createChooser(callIntent, "Select Picture"), PICK_IMAGE);
             }
         });
 
-        faceRecognition = new MicrosoftProjectOxford(new AsyncResponse<List<FaceProperties>>() {
+        faceRecognition = new FacePlusPlus(new AsyncResponse<List<FaceProperties>>() {
+
             @Override
             public void processFinish(List<FaceProperties> faces) {
                 detectionProgressDialog.dismiss();
@@ -109,32 +87,25 @@ public class MicrosoftProjectOxfordFaceCapturingActivity extends NavigationDrawe
         detectionProgressDialog = new ProgressDialog(this);
     }
 
-    private File createTemporaryFile(String part, String ext) throws Exception
-    {
-        File tempDir= Environment.getExternalStorageDirectory();
-        tempDir=new File(tempDir.getAbsolutePath()+"/.temp/");
-        if(!tempDir.exists())
-        {
-            tempDir.mkdirs();
-        }
-        return File.createTempFile(part, ext, tempDir);
-    }
-
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == Activity.RESULT_OK) {
-
-            ImageView imageView = (ImageView) findViewById(R.id.imageView1);
-            grabImage(imageView);
-            photo.deleteOnExit();
-
+        if (requestCode == PICK_IMAGE && resultCode == Activity.RESULT_OK && data != null && data.getData() != null) {
+            Uri uri = data.getData();
             try {
+                Bitmap src = MediaStore.Images.Media.getBitmap(getContentResolver(), uri);
+                Matrix rotationMatrix = OrientationHelper.rotate270();
+                bitmap = BitmapProducer.CreateBitmap(src, rotationMatrix);
+                ImageView imageView = (ImageView) findViewById(R.id.imageView1);
+                imageView.setImageBitmap(bitmap);
+
                 detectAndFrame(bitmap);
+
+            } catch (IOException e) {
+                e.printStackTrace();
             } catch (NoContextPresentException e) {
                 e.printStackTrace();
             }
-
         }
     }
 
@@ -176,30 +147,5 @@ public class MicrosoftProjectOxfordFaceCapturingActivity extends NavigationDrawe
             }
         }
         return bitmap;
-    }
-
-    private void grabImage(ImageView imageView)
-    {
-        this.getContentResolver().notifyChange(imageUri, null);
-        ContentResolver cr = this.getContentResolver();
-        try
-        {
-            bitmap = android.provider.MediaStore.Images.Media.getBitmap(cr, imageUri);
-
-            //roll the picture
-            Matrix rotationMatrix = null;
-            try {
-                rotationMatrix = OrientationHelper.rotate270();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            bitmap = BitmapProducer.CreateBitmap(bitmap, rotationMatrix);
-
-            imageView.setImageBitmap(bitmap);
-        }
-        catch (Exception e)
-        {
-            Toast.makeText(this, "Failed to load", Toast.LENGTH_SHORT).show();
-        }
     }
 }

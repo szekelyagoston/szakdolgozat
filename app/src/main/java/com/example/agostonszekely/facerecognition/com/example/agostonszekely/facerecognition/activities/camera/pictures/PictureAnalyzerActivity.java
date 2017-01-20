@@ -44,7 +44,7 @@ import static android.R.attr.width;
 
 @SuppressWarnings("deprecation")
 public class PictureAnalyzerActivity extends NavigationDrawerActivity {
-    private final int MENUPOSITION = 3;
+    private final int MENUPOSITION = 4;
     private Camera camera;
     private CameraPreview cameraPreview;
 

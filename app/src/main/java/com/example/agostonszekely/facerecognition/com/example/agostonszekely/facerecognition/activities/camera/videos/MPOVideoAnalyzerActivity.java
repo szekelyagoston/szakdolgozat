@@ -7,7 +7,7 @@ import android.os.Bundle;
  */
 
 public class MPOVideoAnalyzerActivity extends VideoAnalyzerActivity{
-    private final int MENUPOSITION = 4;
+    private final int MENUPOSITION = 5;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

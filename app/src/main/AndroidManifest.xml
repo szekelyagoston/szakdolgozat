@@ -24,6 +24,8 @@
         </activity>
         <activity android:name=".com.example.agostonszekely.facerecognition.activities.camera.videos.GMOVIdeoAnalyzerActivity" android:screenOrientation="portrait">
         </activity>
+        <activity android:name=".com.example.agostonszekely.facerecognition.activities.picture.FacePPActivity" android:screenOrientation="portrait">
+        </activity>
     </application>
 
     <uses-permission android:name="android.permission.INTERNET" />

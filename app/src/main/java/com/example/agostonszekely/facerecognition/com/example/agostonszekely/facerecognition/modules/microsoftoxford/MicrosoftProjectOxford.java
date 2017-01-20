@@ -34,11 +34,6 @@ public class MicrosoftProjectOxford extends BaseFaceRecognitionApi implements IF
         super(delegate);
     }
 
-    public MicrosoftProjectOxford(int index, AsyncResponseWithIndex<List<FaceProperties>> delegate) {
-        super(delegate);
-        frameIndex = index;
-    }
-
     @Override
     public void getFaceRectangle(ByteArrayInputStream inputStream) {
 

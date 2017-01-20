@@ -7,7 +7,7 @@ import android.os.Bundle;
  */
 
 public class GMOVIdeoAnalyzerActivity extends VideoAnalyzerActivity{
-    private final int MENUPOSITION = 5;
+    private final int MENUPOSITION = 6;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
