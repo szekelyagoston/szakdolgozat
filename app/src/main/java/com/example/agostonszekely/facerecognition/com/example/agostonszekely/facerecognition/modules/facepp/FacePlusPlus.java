@@ -88,16 +88,13 @@ public class FacePlusPlus extends BaseFaceRecognitionApi implements IFaceRecogni
                 }
 
                 List<FaceProperties> resultArray = new ArrayList<>();
-                //iterating through sparseArray -> bit strange but it should work like this
-                /*for (int i = 0; i < faces.size(); ++i){
-                    int key = faces.keyAt(i);
-                    Face face = faces.get(key);
-                    FaceRectangle rectangle = new FaceRectangle((int)face.getPosition().x, (int)face.getPosition().y, (int)face.getPosition().x +  (int)face.getWidth(), (int)face.getPosition().y +  (int)face.getHeight());
-                    double eulerY = (double) face.getEulerY();
-                    FacePositionEnum facePosition = FacePositionHelper.getFacePositionFromYaw(eulerY);
-                    FacePosition position = new FacePosition(eulerY, facePosition);
+                for (FacePPFaces face: faces){
+                    FaceRectangle rectangle = new FaceRectangle(face.getFaceRectangle().getLeft(), face.getFaceRectangle().getTop(), face.getFaceRectangle().getLeft() + face.getFaceRectangle().getWidth(), face.getFaceRectangle().getTop() + face.getFaceRectangle().getHeight());
+
+                    FacePositionEnum facePosition = FacePositionHelper.getFacePositionFromYaw(face.getFaceAttributes().getHeadPose().getYawAngle());
+                    FacePosition position = new FacePosition(face.getFaceAttributes().getHeadPose().getYawAngle(), facePosition);
                     resultArray.add(new FaceProperties(rectangle, position));
-                }*/
+                }
 
                 delegate.processFinish(resultArray);
             }

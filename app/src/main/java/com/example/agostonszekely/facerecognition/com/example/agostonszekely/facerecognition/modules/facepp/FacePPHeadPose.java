@@ -9,33 +9,33 @@ import org.codehaus.jackson.annotate.JsonProperty;
 public class FacePPHeadPose {
 
     @JsonProperty("yaw_angle")
-    private Long yawAngle;
+    private Double yawAngle;
     @JsonProperty("pitch_angle")
-    private Long pitchAngle;
+    private Double pitchAngle;
     @JsonProperty("roll_angle")
-    private Long rollAngle;
+    private Double rollAngle;
 
-    public Long getYawAngle() {
+    public Double getYawAngle() {
         return yawAngle;
     }
 
-    public void setYawAngle(Long yawAngle) {
+    public void setYawAngle(Double yawAngle) {
         this.yawAngle = yawAngle;
     }
 
-    public Long getPitchAngle() {
+    public Double getPitchAngle() {
         return pitchAngle;
     }
 
-    public void setPitchAngle(Long pitchAngle) {
+    public void setPitchAngle(Double pitchAngle) {
         this.pitchAngle = pitchAngle;
     }
 
-    public Long getRollAngle() {
+    public Double getRollAngle() {
         return rollAngle;
     }
 
-    public void setRollAngle(Long rollAngle) {
+    public void setRollAngle(Double rollAngle) {
         this.rollAngle = rollAngle;
     }
 }
