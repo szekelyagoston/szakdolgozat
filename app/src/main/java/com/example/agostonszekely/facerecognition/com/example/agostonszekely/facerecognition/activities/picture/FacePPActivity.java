@@ -115,7 +115,7 @@ public class FacePPActivity extends SimpleFaceDetectingActivity {
     private void detectAndFrame(final Bitmap imageBitmap) throws NoContextPresentException {
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         //compress quality -> if too high, method will be slow.
-        imageBitmap.compress(Bitmap.CompressFormat.JPEG, 3, outputStream);
+        imageBitmap.compress(Bitmap.CompressFormat.JPEG, 30, outputStream);
         ByteArrayInputStream inputStream =
                 new ByteArrayInputStream(outputStream.toByteArray());
 
