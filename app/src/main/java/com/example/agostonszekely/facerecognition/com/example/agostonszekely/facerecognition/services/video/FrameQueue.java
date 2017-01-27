@@ -28,6 +28,10 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
+
+import static com.example.agostonszekely.facerecognition.com.example.agostonszekely.facerecognition.activities.camera.videos.VideoAnalyzerModules.FACE_PP;
 
 /**
  * Created by agoston.szekely on 2016.11.04..
@@ -52,14 +56,18 @@ public class FrameQueue<T extends Callable<List<FaceProperties>>>{
     }
 
     public void process(AsyncResponse<List<List<FaceProperties>>> response) throws GoogleMobileVisionMissingContextException {
-        ExecutorService executor = Executors.newFixedThreadPool(frames.size());
+        ScheduledExecutorService executor = Executors.newScheduledThreadPool(frames.size());
         List<Future<List<FaceProperties>>> result = new ArrayList<>(frames.size());
         List<List<FaceProperties>> allResult = new ArrayList<>(frames.size());
 
+
+        int timeToDelay = 0;
         for (VideoFrame frame : frames){
             VideoAnalyzerModuleFactory factory = new VideoAnalyzerModuleFactory();
             Callable<List<FaceProperties>> callable = factory.getModule(moduleType, frame.getProcessedInputStream(), context);
-            Future<List<FaceProperties>> future = executor.submit(callable);
+
+            Future<List<FaceProperties>> future = executor.schedule(callable, timeToDelay, TimeUnit.MILLISECONDS);
+            timeToDelay = timeToDelay + moduleType.getDelayTime();
 
             result.add(future);
         }

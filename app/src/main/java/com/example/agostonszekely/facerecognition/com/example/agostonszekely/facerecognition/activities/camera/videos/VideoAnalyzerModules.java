@@ -5,5 +5,17 @@ package com.example.agostonszekely.facerecognition.com.example.agostonszekely.fa
  */
 
 public enum VideoAnalyzerModules {
-    MICROSOFT_PROJECT_OXFORD, GOOGLE_MOBILE_VISION, FACE_PP
+    MICROSOFT_PROJECT_OXFORD(0), GOOGLE_MOBILE_VISION(0), FACE_PP(1000);
+
+
+    VideoAnalyzerModules(int delayTime) {
+        this.delayTime = delayTime;
+    }
+
+    //delaying between calls (in millis). Might be userful when concurency limit exist
+    private int delayTime;
+
+    public int getDelayTime() {
+        return delayTime;
+    }
 }
