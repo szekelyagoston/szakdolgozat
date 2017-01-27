@@ -3,6 +3,7 @@ package com.example.agostonszekely.facerecognition.com.example.agostonszekely.fa
 import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 import org.codehaus.jackson.annotate.JsonProperty;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -12,7 +13,7 @@ import java.util.List;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class FacePPResponse {
     @JsonProperty("faces")
-    private List<FacePPFaces> faces;
+    private List<FacePPFaces> faces = new ArrayList<>();
 
     public List<FacePPFaces> getFaces() {
         return faces;

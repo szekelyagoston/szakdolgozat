@@ -5,6 +5,7 @@ import android.hardware.Camera;
 
 import com.example.agostonszekely.facerecognition.com.example.agostonszekely.facerecognition.activities.camera.videos.exceptions.GoogleMobileVisionMissingContextException;
 import com.example.agostonszekely.facerecognition.com.example.agostonszekely.facerecognition.modules.commons.face.wrapper.FaceProperties;
+import com.example.agostonszekely.facerecognition.com.example.agostonszekely.facerecognition.modules.facepp.FacePPFaceAPI;
 import com.example.agostonszekely.facerecognition.com.example.agostonszekely.facerecognition.modules.googlemobilevision.GoogleMobileVisionFaceAPI;
 import com.example.agostonszekely.facerecognition.com.example.agostonszekely.facerecognition.modules.microsoftoxford.MicrosoftProjectOxfordFaceAPI;
 import com.example.agostonszekely.facerecognition.com.example.agostonszekely.facerecognition.services.video.IVideoAnalyzer;
@@ -35,6 +36,9 @@ public class VideoAnalyzerModuleFactory {
             case MICROSOFT_PROJECT_OXFORD: {
                 return new MicrosoftProjectOxfordFaceAPI(inputStream);
             }
+            case FACE_PP: {
+                return new FacePPFaceAPI(inputStream);
+            }
             default: {
                 return null;
             }
@@ -48,6 +52,9 @@ public class VideoAnalyzerModuleFactory {
             }
             case MICROSOFT_PROJECT_OXFORD: {
                 return new MPOVideoAnalyzer(parameters);
+            }
+            case FACE_PP: {
+                return new FacePPVideoAnalyzer(parameters);
             }
             default: {
                 return null;

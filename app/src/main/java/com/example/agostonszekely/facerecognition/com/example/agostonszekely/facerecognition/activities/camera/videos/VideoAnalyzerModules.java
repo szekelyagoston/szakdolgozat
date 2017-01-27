@@ -5,5 +5,5 @@ package com.example.agostonszekely.facerecognition.com.example.agostonszekely.fa
  */
 
 public enum VideoAnalyzerModules {
-    MICROSOFT_PROJECT_OXFORD, GOOGLE_MOBILE_VISION
+    MICROSOFT_PROJECT_OXFORD, GOOGLE_MOBILE_VISION, FACE_PP
 }

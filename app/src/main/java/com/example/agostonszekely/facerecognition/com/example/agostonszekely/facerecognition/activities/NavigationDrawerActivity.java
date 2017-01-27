@@ -16,6 +16,7 @@ import android.widget.ListView;
 import com.example.agostonszekely.facerecognition.R;
 import com.example.agostonszekely.facerecognition.com.example.agostonszekely.facerecognition.activities.camera.MicrosoftProjectOxfordFaceCapturingActivity;
 import com.example.agostonszekely.facerecognition.com.example.agostonszekely.facerecognition.activities.camera.pictures.PictureAnalyzerActivity;
+import com.example.agostonszekely.facerecognition.com.example.agostonszekely.facerecognition.activities.camera.videos.FacePPVIdeoAnalyzerActivity;
 import com.example.agostonszekely.facerecognition.com.example.agostonszekely.facerecognition.activities.camera.videos.GMOVIdeoAnalyzerActivity;
 import com.example.agostonszekely.facerecognition.com.example.agostonszekely.facerecognition.activities.camera.videos.MPOVideoAnalyzerActivity;
 import com.example.agostonszekely.facerecognition.com.example.agostonszekely.facerecognition.activities.camera.videos.VideoAnalyzerActivity;
@@ -157,6 +158,12 @@ public class NavigationDrawerActivity extends AppCompatActivity {
             case 6 : {
                 Intent a = new Intent(this, GMOVIdeoAnalyzerActivity.class);
                 a.putExtra("Module", VideoAnalyzerModules.GOOGLE_MOBILE_VISION);
+                startActivity(a);
+                break;
+            }
+            case 7 : {
+                Intent a = new Intent(this, FacePPVIdeoAnalyzerActivity.class);
+                a.putExtra("Module", VideoAnalyzerModules.FACE_PP);
                 startActivity(a);
                 break;
             }

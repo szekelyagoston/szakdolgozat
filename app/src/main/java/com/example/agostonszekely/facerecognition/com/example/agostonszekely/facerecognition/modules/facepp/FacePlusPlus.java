@@ -91,8 +91,8 @@ public class FacePlusPlus extends BaseFaceRecognitionApi implements IFaceRecogni
                 for (FacePPFaces face: faces){
                     FaceRectangle rectangle = new FaceRectangle(face.getFaceRectangle().getLeft(), face.getFaceRectangle().getTop(), face.getFaceRectangle().getLeft() + face.getFaceRectangle().getWidth(), face.getFaceRectangle().getTop() + face.getFaceRectangle().getHeight());
 
-                    FacePositionEnum facePosition = FacePositionHelper.getFacePositionFromYaw(face.getFaceAttributes().getHeadPose().getYawAngle());
-                    FacePosition position = new FacePosition(face.getFaceAttributes().getHeadPose().getYawAngle(), facePosition);
+                    FacePositionEnum facePosition = FacePositionHelper.getFacePositionFromYaw(face.getFaceAttributes().getHeadPose().getCorrectedYawAngle());
+                    FacePosition position = new FacePosition(face.getFaceAttributes().getHeadPose().getCorrectedYawAngle(), facePosition);
                     resultArray.add(new FaceProperties(rectangle, position));
                 }
 
@@ -111,23 +111,6 @@ public class FacePlusPlus extends BaseFaceRecognitionApi implements IFaceRecogni
         });
     }
 
-    private byte[] convertToByteArray(ByteArrayInputStream inputStream) {
-        ByteArrayOutputStream buffer = new ByteArrayOutputStream();
-        int nRead;
-        byte[] data = new byte[16384];
-
-        while ((nRead = inputStream.read(data, 0, data.length)) != -1) {
-            buffer.write(data, 0, nRead);
-        }
-
-        try {
-            buffer.flush();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        return buffer.toByteArray();
-    }
 
     @Override
     public void getFaceRectangle(ByteArrayInputStream inputStream, Context context) {
